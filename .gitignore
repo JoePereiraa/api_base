@@ -1,0 +1,11 @@
+#Dependencies
+node_modules
+
+#Environment
+.env
+
+#Database
+src/**/*.db
+
+# Build
+dist
