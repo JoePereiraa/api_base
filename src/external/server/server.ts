@@ -1,6 +1,6 @@
 import express, { NextFunction } from 'express';
 import { router } from './routes/routes';
-import { NotFound } from '../../core/middlewares/NotFound';
+import { NotFound } from '@core/middlewares/NotFound';
 
 class Server {
     public server: express.Application;

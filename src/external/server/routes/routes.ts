@@ -1,7 +1,7 @@
 import { NextFunction, Router } from "express";
 
-// import UserRoutes from "./_user";
-import { knex } from "../../database/database";
+import UserRoutes from "./_user";
+import { knex } from "@external/database/database";
 
 const router: Router = Router();
 
@@ -16,7 +16,7 @@ router.get('/hello', async (req, res) => {
     return;
 })
 
-// router.use(UserRoutes)
+router.use(UserRoutes)
 
 export {
     router

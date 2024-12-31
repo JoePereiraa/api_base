@@ -11,6 +11,7 @@ server.listen(
     () => console.log(
         `-----------------------------------------------------------\n 
         ✅ API server running on HOST: ${env.HOST} - PORT: ${env.PORT}
+        Go To - ${env.HOST}:${env.PORT}/
         \n-----------------------------------------------------------
     `)
 )

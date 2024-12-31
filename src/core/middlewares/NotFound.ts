@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { HTTPCode } from '../.shared/enums/HTTPCode';
+import { HTTPCode } from '@core/.shared/enums/HTTPCode';
 
 const NotFound = (req: Request, res: Response,) => {
     res.status(HTTPCode.NOT_FOUND).json({
