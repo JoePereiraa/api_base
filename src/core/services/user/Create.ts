@@ -29,5 +29,5 @@ class CreateService implements UseCase<User, Response> {
 }
 
 export {
-    CreateService as CreateUseService
+    CreateService as CreateUserService
 }

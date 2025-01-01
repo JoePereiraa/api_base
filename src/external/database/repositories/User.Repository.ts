@@ -15,6 +15,48 @@ class _UserRepository implements UserRepository {
         
         return createUser;
     }
+
+    async readAll(): Promise<User[]> {
+        const users: User[] = await knex('users')
+            .select('*');
+
+        return users;
+    }
+
+    async readOne(id: string): Promise<User | null> {
+        const user: User = await knex('users')
+            .where({
+                id,
+            }).first()
+
+        return user;
+    }
+
+    async update(id: string, user: User): Promise<User> {
+        const { name } = user;
+
+        const [ update ] = await knex<User>('users')
+            .where({
+                id,
+            }).update(
+                {
+                    name,
+                },
+                ['id', 'name']
+            )
+
+        return update;
+    }
+
+    async delete(id: string): Promise<void> {
+
+        await knex('users')
+            .where({
+                id,
+            }).delete()
+
+        return;
+    }
 }
 
 export {
