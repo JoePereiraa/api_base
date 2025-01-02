@@ -1,4 +1,6 @@
 import express, { NextFunction } from 'express';
+import cors from 'cors';
+
 import { router } from './routes/routes';
 import { NotFound } from '@core/middlewares/NotFound';
 
@@ -13,6 +15,7 @@ class Server {
 
     private middleware() {
         this.server.use(express.json());
+        this.server.use(cors());
     }
 
     private router(): void {
