@@ -13,7 +13,7 @@ class ReadOneService implements UseCase<String, Response> {
             const user = await this.repository.readOne(id);
 
             return {
-                status_code: HTTPCode.OK,
+                status_code: user ? HTTPCode.OK : HTTPCode.NOT_FOUND,
                 data: user,
                 message: user ? 'User Found' : 'User Not Found'
             }

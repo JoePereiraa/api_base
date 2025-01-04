@@ -22,11 +22,11 @@ class UserController {
     create = async (req: Request, res: Response): Promise<void> => {
         const { name } = req.body;
 
-        const { status_code, message } = await this._createUseCase.execute({
+        const { status_code, message, errors } = await this._createUseCase.execute({
             name,
         })
 
-        res.status(status_code).json(message);
+        res.status(status_code).json({ message: message, errors: errors});
         return;
     }
 
