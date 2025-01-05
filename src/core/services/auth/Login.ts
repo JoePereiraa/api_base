@@ -1,7 +1,7 @@
 import { UseCase } from '@core/.shared/UseCase';
 import { User } from '@core/models/User.Model';
 import { LoginSchema } from '@adapters/schemas/Login.Schema';
-import { UserRepository } from './_User.Repository';
+import { UserRepository } from '../user/_User.Repository';
 
 import { HTTPCode } from '@core/.shared/enums/_enums';
 import { Response } from '@core/.shared/interfaces/Response';
@@ -16,7 +16,7 @@ class LoginService implements UseCase<User, Response> {
 
     constructor(private readonly repository: UserRepository) {}
 
-    async execute(request: User): Promise<Response> {
+    async execute(request: { email: string, password: string, tokenRecieved: string}): Promise<Response> {
         try {
             const { email, password }: User = LoginSchema(request);
 
@@ -37,7 +37,16 @@ class LoginService implements UseCase<User, Response> {
                 }
             }
 
+            if(request.tokenRecieved) {
+                return {
+                    status_code: HTTPCode.CONFLICT,
+                    message: 'Login is already exists',
+                }
+            }
+
             const token = jwt.sign({ id: userExists.id}, this.SECRET_KEY, { expiresIn: '1h' })
+
+            await this.repository.token(userExists.id!, token);
 
             return {
                 status_code: HTTPCode.CREATED,

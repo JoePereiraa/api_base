@@ -29,6 +29,7 @@ class _UserRepository implements UserRepository {
         const column = key === 'id' ? 'id' : 'email';
 
         const user: User = await knex('users')
+            .select('id', 'name', 'email')
             .where({
                 [column]: value,
             }).first()
@@ -59,6 +60,19 @@ class _UserRepository implements UserRepository {
                 id,
             }).delete()
 
+        return;
+    }
+
+    async token(id: string, token: string | null): Promise<void> {
+        await knex('users')
+            .where({
+                id,
+            }).update(
+                {
+                    session: token,
+                },
+            )
+            
         return;
     }
 }

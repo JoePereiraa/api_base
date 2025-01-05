@@ -1,5 +1,6 @@
-import express, { NextFunction } from 'express';
+import express from 'express';
 import corsConfig from './configs/cors';
+import cookieParser from 'cookie-parser';
 
 import { router } from './routes/routes';
 import { NotFound } from '@core/middlewares/NotFound';
@@ -17,6 +18,7 @@ class Server {
     private middleware() {
         this.server.use(express.json());
         this.server.use(corsConfig);
+        this.server.use(cookieParser());
     }
 
     private router(): void {

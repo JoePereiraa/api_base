@@ -7,6 +7,7 @@ interface UserRepository extends Repository<User> {
     readOne(key: 'id' | 'email', value: string): Promise<User | null>;
     update(id: string, u: User): Promise<User | null>;
     delete(id: string): Promise<void>;
+    token(id: string | null, token: string | null): Promise<void>;
 }
 
 export {
