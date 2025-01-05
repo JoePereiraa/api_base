@@ -10,7 +10,7 @@ class ReadOneService implements UseCase<String, Response> {
     async execute(id: string): Promise<Response> {
 
         try {
-            const user = await this.repository.readOne(id);
+            const user = await this.repository.readOne('id', id);
 
             return {
                 status_code: user ? HTTPCode.OK : HTTPCode.NOT_FOUND,

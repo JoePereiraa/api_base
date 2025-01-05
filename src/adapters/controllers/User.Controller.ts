@@ -1,8 +1,7 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 
 import { _UserRepository } from "@external/database/repositories/User.Repository";
 import { CreateUserService, ReadAllUsersService, ReadOneUserService, UpdateUserService, DeleteUserService } from "@/core/services/user/_index";
-import {  } from "@/core/services/user/Delete";
 class UserController {
     private _userConnectRepo = new _UserRepository();
     private _createUseCase: CreateUserService;
@@ -20,10 +19,12 @@ class UserController {
     }
 
     create = async (req: Request, res: Response): Promise<void> => {
-        const { name } = req.body;
+        const { name, email, password } = req.body;
 
         const { status_code, message, errors } = await this._createUseCase.execute({
             name,
+            email, 
+            password
         })
 
         res.status(status_code).json({ message: message, errors: errors});

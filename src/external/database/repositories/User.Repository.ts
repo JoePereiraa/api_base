@@ -5,12 +5,14 @@ import { randomUUID } from "node:crypto";
 
 class _UserRepository implements UserRepository {
     async create(user: User): Promise<User> {
-        const { name } = user;
+        const { name, email, password } = user;
 
         const [ createUser ] = await knex('users')
             .insert({
                 id: randomUUID(),
-                name 
+                name,
+                email, 
+                password
             }).returning('*')
         
         return createUser;
@@ -18,15 +20,17 @@ class _UserRepository implements UserRepository {
 
     async readAll(): Promise<User[]> {
         const users: User[] = await knex('users')
-            .select('*');
+            .select('id', 'name', 'email');
 
         return users;
     }
 
-    async readOne(id: string): Promise<User | null> {
+    async readOne(key: 'id' | 'email', value: string): Promise<User | null> {
+        const column = key === 'id' ? 'id' : 'email';
+
         const user: User = await knex('users')
             .where({
-                id,
+                [column]: value,
             }).first()
 
         return user;
@@ -35,7 +39,7 @@ class _UserRepository implements UserRepository {
     async update(id: string, user: User): Promise<User> {
         const { name } = user;
 
-        const [ update ] = await knex<User>('users')
+        const [ update ] = await knex('users')
             .where({
                 id,
             }).update(

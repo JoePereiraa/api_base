@@ -1,4 +1,3 @@
-import { config } from "dotenv";
 import { z } from "zod";
 
 const envSchema = z.object({
@@ -6,7 +5,8 @@ const envSchema = z.object({
     DATABASE_CLIENT: z.enum(['sqlite', 'pg']),
     DATABASE_URL: z.string(),
     PORT: z.coerce.number().default(3333),
-    HOST: z.any().default('localhost')
+    HOST: z.any().default('localhost'),
+    JWT_SECRET: z.string().default('YOUR-SECRET-KEY'),
 });
 
 const _env = envSchema.safeParse(process.env);

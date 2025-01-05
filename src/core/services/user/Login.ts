@@ -1,35 +1,48 @@
 import { UseCase } from '@core/.shared/UseCase';
 import { User } from '@core/models/User.Model';
-import { UserSchema } from '@adapters/schemas/User.Schema';
+import { LoginSchema } from '@adapters/schemas/Login.Schema';
 import { UserRepository } from './_User.Repository';
 
 import { HTTPCode } from '@core/.shared/enums/_enums';
 import { Response } from '@core/.shared/interfaces/Response';
 import { Validation } from '@/core/.shared/classes/Validation.Class';
-import bcrypt from "bcrypt";
 
-class CreateService implements UseCase<User, Response> {
+import { env } from "@/_env/env";
+import bcrypt from "bcrypt";
+import jwt from 'jsonwebtoken';
+
+class LoginService implements UseCase<User, Response> {
+    private SECRET_KEY = env.JWT_SECRET;
+
     constructor(private readonly repository: UserRepository) {}
 
     async execute(request: User): Promise<Response> {
         try {
-            const { name, email, password }: User = UserSchema(request);
+            const { email, password }: User = LoginSchema(request);
 
             const userExists = await this.repository.readOne('email', email);
 
-            if(userExists) {
+            if(!userExists) {
                 return {
-                    status_code: HTTPCode.CONFLICT,
-                    message: 'User already exists',
+                    status_code: HTTPCode.UNAUTHORIZED,
+                    message: 'Invalid email or password'
                 }
             }
 
-            const hashPassword = await bcrypt.hash(password, 10);
-            await this.repository.create({ name, email, password: hashPassword });
+            const comparePassword = await bcrypt.compare(password, userExists.password!);
+            if(!comparePassword) {
+                return {
+                    status_code: HTTPCode.UNAUTHORIZED,
+                    message: 'Invalid email or password'
+                }
+            }
+
+            const token = jwt.sign({ id: userExists.id}, this.SECRET_KEY, { expiresIn: '1h' })
 
             return {
                 status_code: HTTPCode.CREATED,
-                message: 'User created successfully',
+                data: token,
+                message: 'Login successful',
             }
 
         } catch (err) {
@@ -43,12 +56,12 @@ class CreateService implements UseCase<User, Response> {
 
             return {
                 status_code: HTTPCode.INTERNAL_SERVER_ERROR,
-                message: 'Error creating user',
+                message: 'Error Logging user',
             }
         }
     }
 }
 
 export {
-    CreateService as CreateUserService
+    LoginService
 }

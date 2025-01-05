@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { knex as setupKnex, Knex } from "knex";
-import { env } from "@/_env/env";
+import { env } from "../../_env/env";
 import path from "path";
 
 export const config: Knex.Config = {
