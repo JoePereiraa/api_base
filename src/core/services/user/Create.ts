@@ -40,7 +40,7 @@ class CreateService implements UseCase<User, Response> {
                     errors: err instanceof Validation ? err.details : null,
                 }
             }
-
+            
             return {
                 status_code: HTTPCode.INTERNAL_SERVER_ERROR,
                 message: 'Error creating user',

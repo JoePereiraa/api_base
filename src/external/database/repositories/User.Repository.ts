@@ -29,7 +29,7 @@ class _UserRepository implements UserRepository {
         const column = key === 'id' ? 'id' : 'email';
 
         const user: User = await knex('users')
-            .select('id', 'name', 'email')
+            .select('id', 'name', 'email', 'password')
             .where({
                 [column]: value,
             }).first()

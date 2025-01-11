@@ -3,9 +3,7 @@ import corsConfig from './configs/cors';
 import cookieParser from 'cookie-parser';
 
 import { router } from './routes/routes';
-import { NotFound } from '@core/middlewares/NotFound';
-import { CORS } from '@/core/middlewares/Cors';
-
+import { NotFound, CORS, GlobalErrors } from '@core/middlewares/_index';
 class Server {
     public server: express.Application;
 
@@ -15,7 +13,7 @@ class Server {
         this.router();
     }
 
-    private middleware() {
+    private middleware(): void {
         this.server.use(express.json());
         this.server.use(corsConfig);
         this.server.use(cookieParser());
@@ -25,6 +23,7 @@ class Server {
         this.server.use(router);
         this.server.use(NotFound);
         this.server.use(CORS);
+        this.server.use(GlobalErrors);
     }
 }
 

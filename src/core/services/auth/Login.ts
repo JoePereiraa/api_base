@@ -30,6 +30,7 @@ class LoginService implements UseCase<User, Response> {
             }
 
             const comparePassword = await bcrypt.compare(password, userExists.password!);
+
             if(!comparePassword) {
                 return {
                     status_code: HTTPCode.UNAUTHORIZED,

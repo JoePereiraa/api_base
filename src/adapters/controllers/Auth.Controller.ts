@@ -43,7 +43,7 @@ class AuthController {
         const token = req.cookies.auth_token;
         let decoded: { id: string | null } = { id: null }; 
 
-        if(token != "") {
+        if(token) {
             decoded = jwt.verify(token, env.JWT_SECRET) as { id: string | null }
         }
 
@@ -60,10 +60,10 @@ class AuthController {
 
     me = async (req: Request, res: Response) => {
         const token = req.cookies.auth_token;
-
+        
         let decoded: { id: string | null } = { id: null }; 
 
-        if(token != "") {
+        if(token) {
             decoded = jwt.verify(token, env.JWT_SECRET) as { id: string | null }
         }
 
