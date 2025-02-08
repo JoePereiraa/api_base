@@ -1,6 +1,5 @@
 import { UseCase } from '@core/.shared/UseCase';
 import { User } from '@core/models/User.Model';
-import { UserSchema } from '@adapters/schemas/User.Schema';
 import { UserRepository } from './_User.Repository';
 
 import { HTTPCode } from '@core/.shared/enums/_enums';
@@ -13,9 +12,9 @@ class CreateService implements UseCase<User, Response> {
 
     async execute(request: User): Promise<Response> {
         try {
-            const { name, email, password }: User = UserSchema(request);
+            const { name, email, password } = request;
 
-            const userExists = await this.repository.readOne('email', email);
+            const userExists = await this.repository.readOne('email', email!);
 
             if(userExists) {
                 return {
@@ -24,7 +23,7 @@ class CreateService implements UseCase<User, Response> {
                 }
             }
 
-            const hashPassword = await bcrypt.hash(password, 10);
+            const hashPassword = await bcrypt.hash(password!, 10);
             await this.repository.create({ name, email, password: hashPassword });
 
             return {
@@ -32,18 +31,11 @@ class CreateService implements UseCase<User, Response> {
                 message: 'User created successfully',
             }
 
-        } catch (err) {
-            if(err instanceof Error) {
-                return {
-                    status_code: HTTPCode.UNPROCESSABLE_ENTITY,
-                    message: err.message,
-                    errors: err instanceof Validation ? err.details : null,
-                }
-            }
-            
+        } catch (err) {            
             return {
                 status_code: HTTPCode.INTERNAL_SERVER_ERROR,
-                message: 'Error creating user',
+                message: 'Internal Server Error',
+                errors: err
             }
         }
     }

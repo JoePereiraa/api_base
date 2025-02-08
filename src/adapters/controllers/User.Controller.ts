@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 
 import { _UserRepository } from "@external/database/repositories/User.Repository";
 import { CreateUserService, ReadAllUsersService, ReadOneUserService, UpdateUserService, DeleteUserService } from "@/core/services/user/_index";
+
+import { UserSchema } from '@adapters/schemas/User.Schema';
+import { HTTPCode } from "@/core/.shared/enums/HTTPCode";
+
 class UserController {
     private _userConnectRepo = new _UserRepository();
     private _createUseCase: CreateUserService;
@@ -18,17 +22,36 @@ class UserController {
         this._deleteUserUseCase = new DeleteUserService(this._userConnectRepo);
     }
 
+                // if(err instanceof Error) {
+            //     return {
+            //         status_code: HTTPCode.UNPROCESSABLE_ENTITY,
+            //         message: err.message,
+            //         errors: err instanceof Validation ? err.details : null,
+            //     }
+            // }
+
     create = async (req: Request, res: Response): Promise<void> => {
-        const { name, email, password } = req.body;
+        try { 
+            const { name, email, password } = UserSchema(req.body);
 
-        const { status_code, message, errors } = await this._createUseCase.execute({
-            name,
-            email, 
-            password
-        })
+            const { status_code, message, errors } = await this._createUseCase.execute({
+                name,
+                email, 
+                password
+            });
+    
+            res.status(status_code).json({ message: message, errors: errors});
+            return;
+        } catch (err) {
+            if(err instanceof Error) {
+                res.status(HTTPCode.INTERNAL_SERVER_ERROR).json({
+                    status_code: HTTPCode.INTERNAL_SERVER_ERROR,
+                    errors: err
+                });
 
-        res.status(status_code).json({ message: message, errors: errors});
-        return;
+                return
+            }
+        }
     }
 
     readAll = async (req: Request, res: Response): Promise<void> => {

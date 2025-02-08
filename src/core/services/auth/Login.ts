@@ -1,6 +1,6 @@
 import { UseCase } from '@core/.shared/UseCase';
 import { User } from '@core/models/User.Model';
-import { LoginSchema } from '@adapters/schemas/Login.Schema';
+
 import { UserRepository } from '../user/_User.Repository';
 
 import { HTTPCode } from '@core/.shared/enums/_enums';
@@ -18,7 +18,7 @@ class LoginService implements UseCase<User, Response> {
 
     async execute(request: { email: string, password: string, tokenRecieved: string}): Promise<Response> {
         try {
-            const { email, password }: User = LoginSchema(request);
+            const { email, password } = request;
 
             const userExists = await this.repository.readOne('email', email);
 
@@ -56,17 +56,10 @@ class LoginService implements UseCase<User, Response> {
             }
 
         } catch (err) {
-            if(err instanceof Error) {
-                return {
-                    status_code: HTTPCode.UNPROCESSABLE_ENTITY,
-                    message: err.message,
-                    errors: err instanceof Validation ? err.details : null,
-                }
-            }
-
             return {
                 status_code: HTTPCode.INTERNAL_SERVER_ERROR,
-                message: 'Error Logging user',
+                message: 'Internal Server Error',
+                errors: err
             }
         }
     }

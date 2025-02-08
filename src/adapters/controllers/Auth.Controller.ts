@@ -5,6 +5,8 @@ import { LoginService } from "@/core/services/auth/Login";
 import { LogOutService } from "@/core/services/auth/Logout";
 import { MeService } from "@/core/services/auth/Me";
 
+import { LoginSchema } from '@adapters/schemas/Login.Schema';
+import { HTTPCode } from "@/core/.shared/enums/HTTPCode";
 import jwt from "jsonwebtoken";
 import { env } from "@/_env/env";
 
@@ -21,22 +23,34 @@ class AuthController {
     }
 
     login = async (req: Request, res: Response) => {
-        const { email, password } = req.body;
-        const token = req.cookies.auth_token;
+        try {
+            const { email, password } = LoginSchema(req.body);
 
-        const { status_code, data, message, errors } = await this._loginUseCase.execute({ email, password, tokenRecieved: token });
+            const token = req.cookies.auth_token;
+    
+            const { status_code, data, message, errors } = await this._loginUseCase.execute({ email, password, tokenRecieved: token });
+    
+            if(data) {
+                res.cookie('auth_token', data, {
+                    maxAge: 3600 * 1000, // 1 hora
+                    httpOnly: true,
+                    sameSite: 'strict',
+                    path: '/'
+                });
+            }
+    
+            res.status(status_code).json({ message, errors })
+            return;
+        } catch (err) {
+            if(err instanceof Error) {
+                res.status(HTTPCode.INTERNAL_SERVER_ERROR).json({
+                    status_code: HTTPCode.INTERNAL_SERVER_ERROR,
+                    errors: err
+                });
 
-        if(data) {
-            res.cookie('auth_token', data, {
-                maxAge: 3600 * 1000, // 1 hora
-                httpOnly: true,
-                sameSite: 'strict',
-                path: '/'
-            });
+                return
+            }
         }
-
-        res.status(status_code).json({ message, errors })
-        return;
     }
 
     logout = async (req: Request, res: Response) => {
